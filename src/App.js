@@ -19,20 +19,48 @@ class App extends Component {
     this.getCitations = this.getCitations.bind(this)
   }
 
+
+
   getCitations() {
     let date = this.formatDate()
-    fetch(`https://data.cityofnewyork.us/resource/uvbq-3m68.json?$where=issue_date%20=%20%27${date}%27%20AND%20payment_amount%20%3E%200`)
-    .then(response => response.json())
-    .then(responseJson => {
-      this.setState({
-        citations: responseJson
+    if (this.validateDate(date)) {
+      fetch(`https://data.cityofnewyork.us/resource/uvbq-3m68.json?$where=issue_date%20=%20%27${date}%27%20AND%20payment_amount%20%3E%200`)
+      .then(response => response.json())
+      .then(responseJson => {
+        this.setState({
+          citations: responseJson
+        })
       })
+      .catch(error => console.log(error))
+    } else {
+      this.setState({
+        error: true
+      })
+    }
+  }
+
+  handleChangeText(dateType, event) {
+    let value = event.target.value
+    this.setState({
+      [dateType]: value,
+      error: false
     })
-    .catch(error => console.log(error))
+  }
+
+  validateDate(date) {
+    let requestDate = new Date(date)
+    let maxDate =new Date()
+    let minDate = new Date('12/31/2008')
+    if (date.length === 10 && maxDate > requestDate && minDate < requestDate) {
+      return true;
+    }
+    return false;
   }
 
   formatDate() {
     let { day, month, year } = this.state
+    if (day.length < 2) day = `0${day}`
+    if (month.length < 2) day = `0${month}`
     return `${day}/${month}/${year}`
   }
 
@@ -40,26 +68,20 @@ class App extends Component {
     return '$' + `${number}`.split(/(?=(?:...)*$)/).join(',')
   }
 
-  getSum(total, num) {
-    return total + num;
-  }
-
   sumOfCitations() {
-    if (this.state.citations.length === 0) return
+    if (this.state.citations.length === 0) return;
     return this.state.citations.map((itm) => (
       parseInt(itm.payment_amount)
     )).reduce(this.getSum);
   }
 
-  handleChangeText(item, event) {
-    this.setState({
-      [item]: event.target.value
-    })
+  getSum(total, num) {
+    return total + num;
   }
 
   render() {
     let date = this.formatDate() || '',
-        { citations } = this.state,
+        { citations, error } = this.state,
         sum = this.sumOfCitations() || 0,
         totalDollars = this.formatDollars(`${sum}`) || 0
 
@@ -70,9 +92,10 @@ class App extends Component {
           {
             citations.length ?
             `Displaying Violations for ${date}` :
-            'Submit a date to view all citations issued and payed that day in NYC'
+            'Submit a date between 2008 - 2019 to view all citations issued and payed that day in NYC'
           }
         </h2>
+        { error ? <h2 className="error">Invalid Date</h2> : <div/>}
         <DateModal
           onChangeDay={this.handleChangeTextDay}
           onChangeMonth={this.handleChangeTextMonth}
