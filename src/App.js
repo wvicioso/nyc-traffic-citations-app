@@ -13,10 +13,10 @@ class App extends Component {
       month: '',
       year: '',
     }
-  }
-
-  componentDidMount() {
-
+    this.handleChangeTextDay = this.handleChangeText.bind(this, 'day')
+    this.handleChangeTextMonth = this.handleChangeText.bind(this, 'month')
+    this.handleChangeTextYear = this.handleChangeText.bind(this, 'year')
+    this.getCitations = this.getCitations.bind(this)
   }
 
   getCitations() {
@@ -74,10 +74,10 @@ class App extends Component {
           }
         </h2>
         <DateModal
-          onChangeDay={this.handleChangeText.bind(this, 'day')}
-          onChangeMonth={this.handleChangeText.bind(this, 'month')}
-          onChangeYear={this.handleChangeText.bind(this, 'year')}
-          onClick={this.getCitations.bind(this)}
+          onChangeDay={this.handleChangeTextDay}
+          onChangeMonth={this.handleChangeTextMonth}
+          onChangeYear={this.handleChangeTextYear}
+          onClick={this.getCitations}
           day={this.state.day}
           month={this.state.month}
           year={this.state.year}
