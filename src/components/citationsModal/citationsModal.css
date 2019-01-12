@@ -1,0 +1,20 @@
+.citationsWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 60%;
+}
+
+#citations {
+  background: white;
+  position: relative;
+  margin-top: 10px;
+  height: 600px;
+  width: 100%;
+  overflow: auto;
+}
+
+@media only screen and (max-width : 700px) {
+  .citationsWrapper {
+    width: 100%;
+  }
+}
